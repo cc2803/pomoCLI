@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 std::chrono::minutes getDuration(const std::string& label) {
 
@@ -15,6 +18,13 @@ std::chrono::minutes getDuration(const std::string& label) {
 }
 
 int main() {
+#ifdef _WIN32
+    // Without this, Windows consoles decode the UTF-8 bytes of the progress
+    // bar's block character one byte at a time using the legacy OEM/ANSI
+    // codepage, producing mojibake instead of a solid block.
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     std::cout << "=== Pomodoro CLI ===\n";
 
     std::chrono::minutes workMinutes = getDuration("Work duration (minutes): ");

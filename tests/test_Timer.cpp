@@ -13,3 +13,16 @@ TEST_CASE("Timer calls its sleep callback once per tick, without real sleeping",
 
     REQUIRE(callCount == 4); // The callback should be called 4 times for a 3-second duration (3, 2, 1, 0).
 }
+
+TEST_CASE("Timer with a zero-second duration does not crash (progress bar division-by-zero regression)",
+          "[Timer]") {
+    int callCount = 0;
+    auto countingCallback = [&callCount](std::chrono::seconds) {
+        callCount++;
+    };
+
+    Timer timer(std::chrono::seconds(0), countingCallback);
+    timer.run("Test");
+
+    REQUIRE(callCount == 1); // remainingTime starts at 0, loop runs exactly once.
+}
