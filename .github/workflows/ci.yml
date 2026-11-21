@@ -20,6 +20,5 @@ jobs:
       - name: Build
         run: cmake --build build
 
-      # TODO: enabled once Catch2/CTest land
-      # - name: Test
-      #   run: ctest --test-dir build --output-on-failure
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
