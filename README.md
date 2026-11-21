@@ -94,9 +94,12 @@ flowchart TD
 - **`formatTime` is extracted as a free function rather than inlined in the countdown loop.** Isolating it from `std::cin`, `std::cout`, and `std::this_thread::sleep_for` means it can be exercised by a unit test with a plain integer in and a string out, with no need to mock time or capture terminal output.
 - **Headers declare, source files define.** Every class and function is declared in `include/` and implemented in `src/`, so a header can be included from multiple translation units without risking multiple-definition linker errors.
 
+## Known limitations
+
+- **Colors and the progress bar require a VT100-capable terminal.** The countdown digits, Work/Break labels, and celebration banners are rendered using raw ANSI escape codes (e.g. `\033[91m`), and the progress bar uses the UTF-8 block character `█`. This works out of the box on Windows Terminal, and on most Linux/macOS terminals. On legacy Windows consoles (old `cmd.exe`/PowerShell), `main()` calls `SetConsoleOutputCP(CP_UTF8)` at startup specifically so the block character decodes correctly, but if your terminal doesn't honor ANSI escape sequences at all, the color codes will print as visible garbage characters rather than being interpreted. There is no capability detection — this is a known, accepted limitation rather than something the program works around.
+
 ## Possible future improvements
 
 - Command-line argument parsing (`--work`, `--break`, `--cycles`) as an alternative to interactive prompts.
 - Pause/resume support, which would require non-blocking keyboard input.
 - Persisting completed sessions to a log file for history/statistics.
-- Unit tests for `formatTime()` using a framework such as Catch2 or GoogleTest.
